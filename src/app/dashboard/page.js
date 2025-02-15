@@ -5,20 +5,53 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Table from 'react-bootstrap/Table';
 import { MdDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
 import { Button } from "react-bootstrap";
 import Link from "next/link";
+import AddForm from "../component/AddForm";
+import Modal from 'react-bootstrap/Modal';
+import EditForm from "../component/EditForm";
 
 export default function Dashboard() {
   const [user, setUser] = useState([]);
   const [search, setSearch] = useState("")
   const [page, setPage] = useState(1)
-  const perPageStudent = 10
+  const [show, setShow] = useState(false);
 
+  const [updateStudent,setUpdateStudent]=useState({
+    studentName: "",
+    fatherName: "",
+    motherName: "",
+    mobile: "",
+    address: "",
+    city: "",
+    district: "",
+    rollNo: "",
+  })
 
+  const handleChange = (e) => {
+    setUpdateStudent({ ...updateStudent, [e.target.name]: e.target.value });
+  };
+
+  const handleClose = () => {
+    setShow(false);
+  };
+
+  const handleShow =async (id) =>{
+    setShow(true)
+    try {
+      const res=await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/student/${id}`)
+      const data=await res.json()
+      setUpdateStudent({...data,_id: id})
+
+    } catch (error) {
+      throw new Error("Data Update Error",error)
+    }
+  };
+
+  const perPageStudent = 5
   const router = useRouter();
 
-// Get Api All User Get Krne ke liye
+  // Get Api All User Get Krne ke liye
   async function studentList() {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/student`)
     const student = await res.json()
@@ -29,6 +62,10 @@ export default function Dashboard() {
     studentList()
   }, [])
 
+  const refreshList = () => {
+    studentList();
+  };
+
   // logout se login page redirect krne ke liye
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -38,7 +75,7 @@ export default function Dashboard() {
   }, []);
 
 
-  const filterData = user.filter((item) => item.studentName.toLowerCase().includes(search.toLowerCase()))
+  const filterData = user.filter((item) => item.studentName.toLowerCase().includes(search.toLowerCase()) || item.address.toLowerCase().includes(search.toLowerCase()) || item.mobile.toLowerCase().includes(search.toLocaleLowerCase()))
   const lastSliceEntry = page * perPageStudent;
   const firstSliceEntry = lastSliceEntry - perPageStudent;
   const pageValue = filterData.slice(firstSliceEntry, lastSliceEntry)
@@ -82,52 +119,74 @@ export default function Dashboard() {
 
   return (
     <>
-
-      <div className="mb-2 mt-2" style={{ justifyItems: "center", display: 'flex', justifyContent: 'space-between', padding: '0px 10px', height: "35px" }}>
-        <Link href={'/studentform'} style={{textDecoration:'none',color:'black'}}><button style={{ display: 'flex', background: 'green', padding: '0px 5px', borderRadius: '5px', lineHeight: "35px", gap: '5px' }}><FaPlus style={{ marginTop: '10px' }} />Add Student</button></Link>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Student Form Update</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
         
+          <EditForm updateStudent={updateStudent} handleChange={handleChange}  refreshList={refreshList} handleClose={handleClose} />
+    
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleClose}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <div className="mb-2 mt-2 addForm-btn">
+
+        <AddForm refreshList={refreshList} />
+
+
+
         <h3>Student List</h3>
-        <input style={{ border: '1px solid #e5e7eb', borderRadius: "5px" }} value={search} onChange={(e) => setSearch(e.target.value)} type="search" placeholder="search" />
+        <input className="search-input" value={search} onChange={(e) => setSearch(e.target.value)} type="search" placeholder="search" />
       </div>
-      <div style={{ textAlign: "center", padding: "0px 10px" }}>
+      <div className="table-mainbody">
         <Table striped bordered hover size="sm">
           <thead>
             <tr>
               <th>S.NO.</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Username</th>
+              <th>User Name</th>
+              <th>Mobile No.</th>
+              <th>Address</th>
               <th>Actions</th>
             </tr>
           </thead>
-              <tbody>
-                {user.length === 0 ? (
-                  // Agar user ka data empty hai to ye chalega
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
-                      <span>No Data Available</span>
-                    </td>
-                  </tr>
-                ) : pageValue.length > 0 ? (pageValue.map((item, index) => (
-                  <tr key={item._id}>
-                    <td>{index + 1}</td>
-                    <td>
-                      <Link href={`/dashboard/${item._id}`} style={{ textDecoration: 'none', color: 'black' }}>{item.studentName}</Link></td>
-                    <td>{item.mobile}</td>
-                    <td>{item.address}</td>
-                    <td style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px", fontSize: '25px' }}>
-                      <button style={{ color: 'red' }} onClick={() => handleDelete(item._id)}><MdDelete /></button>
-                      <button style={{ color: 'green' }} ><Link href={`editpage/${item._id}`}><FaRegEdit /></Link></button>
-                    </td>
-                  </tr>
-                ))
-                ) : (
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: "center", padding: "20px" }}>
-                      <span>Loading...</span></td>
-                  </tr>
-                )}
-              </tbody>
+          <tbody>
+            {user.length === 0 ? (
+              // Agar user ka data empty hai to ye chalega
+              <tr>
+                <td colSpan="5" className="table-td">
+                  <span>No Data Available</span>
+                </td>
+              </tr>
+            ) : pageValue.length > 0 ? (pageValue.map((item, index) => (
+              <tr key={item._id}>
+                <td>{index + 1}</td>
+                <td>
+                  <Link href={`/dashboard/${item._id}`} className="link-a-text">{item.studentName}</Link></td>
+                <td>{item.mobile}</td>
+                <td>{item.address}</td>
+                <td className="action-column">
+                  <button style={{ color: 'red' }} onClick={() => handleDelete(item._id)}><MdDelete /></button>
+                  <Button onClick={()=>handleShow(item._id)}  className="editBtn" ><FaRegEdit /></Button>
+
+                </td>
+              </tr>
+            ))
+            ) : (
+              <tr>
+                <td colSpan="5" className="table-td">
+                  <span>No Data Available Search Input</span></td>
+              </tr>
+            )}
+          </tbody>
         </Table>
       </div>
       <div className='p-2'>

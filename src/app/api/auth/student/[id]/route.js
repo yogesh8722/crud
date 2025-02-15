@@ -33,21 +33,27 @@ export async function GET(req) {
     
 }
 
-export async function PUT(req){
-    await connectDB()
+
+export async function PUT(req) {
+    await connectDB();
     try {
-        const id=req.nextUrl.pathname.split("/").pop()
-        const updateStudent=await Student.findByIdAndUpdate(
+        const id = req.nextUrl.pathname.split("/").pop();
+        const body = await req.json();
+        const { studentName, fatherName, motherName, mobile, address, city, district, rollNo } = body;
+
+        const updateStudent = await Student.findByIdAndUpdate(
             id,
-            {studentName,fatherName,motherName,mobile,address,city,district,rollNo},
-            {new:true,runValidators:true}
-        )
-        if(!updateStudent){
-            return NextResponse.json({error:"user Not Found"},{status:404})
+            { studentName, fatherName, motherName, mobile, address, city, district, rollNo },
+            { new: true, runValidators: true }
+        );
+
+        if (!updateStudent) {
+            return NextResponse.json({ error: "User Not Found" }, { status: 404 });
         }
-        return NextResponse.json(updateStudent,{status:200})
+
+        return NextResponse.json(updateStudent, { status: 200 });
 
     } catch (error) {
-        return NextResponse.json({error:error.message},{status:500})
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

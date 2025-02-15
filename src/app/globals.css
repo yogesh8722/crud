@@ -2,14 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+
 .mainbody-login{
   justify-items: center;
   margin-top: 20px;
   
 }
 .mainbody-login h1{
-  color: red;
-  font-size: 20px;
   justify-items: center;
 }
 .mainbody-login form{
@@ -34,4 +33,42 @@
 }
 .student-detail-page{
   justify-items: center;
+}
+.editBtn{
+  display: flex;
+  background-color: green;
+  padding: 0px 5px;
+  border-radius: 5px;
+  line-height: 35px;
+  gap: 5px;
+}
+.action-column{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 25px;
+}
+.search-input{
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 5px;
+}
+.addForm-btn{
+justify-items: center;
+justify-content: space-between;
+display: flex;
+padding: 0px 10px;
+height: 35px;
+}
+.table-mainbody{
+text-align: center;
+padding: 0px 10px;
+}
+.table-td{
+  text-align: center;
+  padding: 20px;
+}
+.link-a-text{
+  text-decoration: none;
 }

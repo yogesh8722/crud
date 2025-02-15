@@ -34,7 +34,7 @@ export default function Register() {
         <input type="email" placeholder="Email" readOnly onFocus={(e)=>e.target.removeAttribute('readOnly')} onChange={(e) => setUser({ ...user, email: e.target.value })} required />
         <input type="password" placeholder="Password" readOnly onFocus={(e)=>e.target.removeAttribute('readOnly')} onChange={(e) => setUser({ ...user, password: e.target.value })} required />
         <button type="submit">Register</button>
-        <Link href={'/login'}>Login</Link>
+        <Link href={'/login'} style={{textDecoration:'none'}}>Login</Link>
       </form>
     </div>
     </div>

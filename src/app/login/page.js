@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Button } from "react-bootstrap";
 
 export default function Login() {
   const [user, setUser] = useState({ email: "", password: "" });
@@ -35,9 +36,8 @@ export default function Login() {
           onFocus={(e) => e.target.removeAttribute('readonly')} onChange={(e) => setUser({ ...user, email: e.target.value })} required />
         <input type="password" placeholder="Password" autoComplete="off" readOnly
           onFocus={(e) => e.target.removeAttribute('readonly')} onChange={(e) => setUser({ ...user, password: e.target.value })} required />
-        <button type="submit">Login</button>
-        <Link href={'/register'}>Register ||</Link>
-        <Link href={'/'}>Forgotton Password</Link>
+        <Button type="submit">Login</Button>
+        <Link href={'/register'} style={{textDecoration:'none'}}>Register</Link>
       </form>
       </div>
     </div>
